@@ -1,0 +1,16 @@
+{
+  "name": "hackaton",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "node-sass": "^4.11.0"
+  },
+  "scripts": {
+    "sass-watch": "node-sass scss/ -o css/ -w"
+  },
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>SIBUR - Reactor Monitoring System</title>
+    <link rel="stylesheet" type="text/css" href="css/main.css?3" />
+    <link rel="stylesheet" type="text/css" href="http://nvd3.org/assets/css/nv.d3.css" />
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
+    <script type="text/javascript" src="https://cdn.rawgit.com/novus/nvd3/v1.7.1/build/nv.d3.js"></script>
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&amp;subset=cyrillic,cyrillic-ext" rel="stylesheet">
+
+</head>
+<body>
+    <header>
+        <div class="header__main-area">
+            <div class="header__main-area__left">
+                <div class="header__main-area-logo_ru"></div>
+                <div class="header__main-area-description_ru"></div>
+            </div>
+
+                <div class="header__main-area__right">
+
+                    <div class="header__main-area__columns">
+                        <div class="header__main-area-id">
+                            Ваш ID: <span id="login-id">62903956</span>
+                        </div>
+
+                        <div class="header__main-area-logout-button" onclick="logout();">
+                            <span class="header__main-area-logout-icon"></span>
+                            <span class="header__main-area-logout-text">Выйти из системы</span>
+                        </div>
+                    </div>
+                </div>
+
+        </div>
+    </header>
+
+
+    <!-- GUEST PAGE
+    <div id="login-page">
+        <div id="login-popup">
+            <div class="lock-icon"></div>
+            <div class="lock-text">Доступ запрещён.<br>Авторизуйтесь для просмотра.</div>
+            <div class="lock-form">
+                <div class="lock-form__line"></div>
+                <input class="lock-form__input" id="login" type="text" placeholder="Ваш ID">
+                <input class="lock-form__input" id="password" type="password" id="password" placeholder="Пароль">
+
+                <div class="lock-form__button__area">
+                    <button onclick="" class="lock-form__button">Войти</button>
+                </div>
+            </div>
+
+        </div>
+    </div>-->
+
+    <div id="reactor-page">
+        <div class="predict-area">
+            <h1 class="title">Прогноз коксования</h1>
+            <table id="predicts">
+                <tr>
+                    <td class="header">Решётка</td>
+                    <td class="header_react">1</td>
+                    <td class="header_react">2</td>
+                    <td class="header_react">3</td>
+                    <td class="header_react">4</td>
+                    <td class="header_react">Все</td>
+                </tr>
+                <tr>
+                    <td class="header">Реактор</td>
+                    <td class="green"></td>
+                    <td class="green"></td>
+                    <td class="green"></td>
+                    <td class="green"></td>
+                    <td class="green">1%</td>
+                </tr>
+                <tr>
+                    <td class="header">Распределительная решётка</td>
+                    <td class="green">0%</td>
+                    <td class="green">0%</td>
+                    <td class="green">0%</td>
+                    <td class="green">0%</td>
+                    <td class="green">0%</td>
+                </tr>
+                <tr>
+                    <td class="header">Решётка #1</td>
+                    <td class="green">0%</td>
+                    <td class="green">0%</td>
+                    <td class="green">0%</td>
+                    <td class="green">0%</td>
+                    <td class="green">0%</td>
+                </tr>
+                <tr>
+                    <td class="header">Решётка #4</td>
+                    <td class="green">0%</td>
+                    <td class="green">0%</td>
+                    <td class="red">92%</td>
+                    <td class="green">0%</td>
+                    <td class="green">0%</td>
+                </tr>
+                <tr>
+                    <td class="header">Решётка #8</td>
+                    <td class="green">0%</td>
+                    <td class="green">0%</td>
+                    <td class="green">0%</td>
+                    <td class="green">0%</td>
+                    <td class="green">0%</td>
+                </tr>
+                <tr>
+                    <td class="header">Решётка #11</td>
+                    <td class="green">0%</td>
+                    <td class="green">0%</td>
+                    <td class="green">0%</td>
+                    <td class="green">0%</td>
+                    <td class="green">0%</td>
+                </tr>
+                <tr>
+                    <td class="header">Решётка #12</td>
+                    <td class="green">0%</td>
+                    <td class="green">0%</td>
+                    <td class="green">0%</td>
+                    <td class="green">0%</td>
+                    <td class="green">0%</td>
+                </tr>
+            </table>
+
+            <div id="period">
+                <div class="period__actual-status">Данные актуальны на: <span id="actual-date">30/03/2019 14:25</span></div>
+
+                <div class="period__actual-results">
+                    <div class="text">Дата и время:</div>
+                    <select class="select-date">
+                        <option>29/03/2019 21:00</option>>
+                        <option>30/03/2019 11:00</option>>
+                        <option>30/03/2019 15:00</option>>
+                        <option>30/03/2019 18:00</option>>
+                    </select>
+                    <button class="update-btn" onclick="updatePeriod();">Обновить</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="graph-area">
+            <h1 class="title">График температур</h1>
+            <div id="chart" ><svg></svg></div>
+
+            <div id="sensor-menu">
+                <div class="period__current-sensor">Отображены данные <span id="current-sensor">1 счётчика</span></div>
+
+                <div class="period__sensors-list">
+                    <div class="text">Выбрать датчик:</div>
+                    <select class="select-sensor">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>6</option>
+                        <option>7</option>
+                        <option>8</option>
+                        <option>9</option>
+                        <option>10</option>
+                        <option>11</option>
+                        <option>12</option>
+                        <option>13</option>
+                        <option>14</option>
+                        <option>15</option>
+                        <option>16</option>
+                        <option>17</option>
+                        <option>18</option>
+                        <option>19</option>
+                        <option>20</option>
+                    </select>
+                    <button class="update-btn" onclick="updatePeriod();">Обновить</button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script type="text/javascript" src="js/main.js"></script>
+
+</body>
+</html>
