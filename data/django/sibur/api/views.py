@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 import pandas as pd
 import glob
 import numpy as np
@@ -10,7 +10,7 @@ import hashlib
 from django.views.decorators.csrf import csrf_exempt
 import json
 from api.models import ReactorOne, Users
-
+from pandas.io.json import json_normalize
 
 def index(request):
     df = pd.read_csv("frame_0.csv")
@@ -52,13 +52,16 @@ def index(request):
     
     req = {}
 
+
     if request.COOKIES.get('usco', None) == None:
         req['status'] = '403'
-        req['json'] = getBdData()
+        req['dataTemp'] = getBdData()
         return HttpResponse(json.dumps(req))
+
         
     else:
         req['status'] = '200'
+        req['dataTemp'] = getBdData()
         return HttpResponse(json.dumps(req))
 		
 @csrf_exempt
@@ -68,37 +71,40 @@ def login(request):
 
     users = Users()
 
-    if request.method == 'POST':
+    if request.method == 'GET':
         user = users.__class__.objects.filter(login = request.POST['login'])
 
         if user.count() >= 1:
 
             if checkPass(user.values('passw'), request.POST['pass']):
 
-                if user.values('role') == 0:
+                if user.values('role') == '0':
                     req['status'] = '200'
                     req['template'] = '<form action="http://localhost:8000/api/changeReactorState/?id=" method="POST"><button></button></form>'
-                    set_cookie(response, 'usco', hashlib.sha256((request.POST['login']+user.values('login')).encode('utf-8')).hexdigest())
-                    return HttpResponse(json.dumps(req))
+                    resp = HttpResponse(json.dumps(req))
+                    set_cookie(resp, 'usco', hashlib.sha256((request.POST['login']+user.values('login')).encode('utf-8')).hexdigest())
+                    return HttpResponseRedirect('95.181.226.169')
 
                 else: 
+					
                     req['status'] = '200'
-                    set_cookie(response, 'usco', hashlib.sha256((request.POST['login']+user.values('login')).encode('utf-8')).hexdigest())
-                    return HttpResponse(json.dumps(req))
+                    resp = HttpResponse(json.dumps(req))
+                    set_cookie(resp, 'usco', hashlib.sha256((request.POST['login']+user.values('login')).encode('utf-8')).hexdigest())
+                    return HttpResponseRedirect('95.181.226.169')
 
             else:
                 req['status'] = '403'
                 req['message'] = 'Вы ввели неверный пароль'
-                return HttpResponse(json.dumps(req))
+                return HttpResponseRedirect('95.181.226.169')
 
         else:
             req['status'] = '403'
             req['message'] = 'Вы попытались зайти под неверным пользователем'
-            return HttpResponse(json.dumps(req))
+            return HttpResponseRedirect('95.181.226.169')
 
     else:
         req['status'] = '403'
-        return HttpResponse(json.dumps(req))
+        return HttpResponseRedirect('95.181.226.169')
 
 
 def checkPass(stored, provided):
